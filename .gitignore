@@ -27,6 +27,8 @@ replay_pid*
 /work
 /logs
 /.idea
+/.git
+/.github
 /target
 /out
 .DS_Store

@@ -174,8 +174,6 @@ public class Dictionary {
                     }
 
                     pool.scheduleAtFixedRate(new DbMonitor(), 10, 60, TimeUnit.SECONDS);
-
-                    // singleton.queryExtendWord();
                 }
             }
         }
@@ -858,66 +856,6 @@ public class Dictionary {
             System.out.println("Database driver loaded successfully");
         } catch (ClassNotFoundException e) {
             logger.error("error", e);
-        }
-    }
-
-    /**
-     * 查询扩展词库
-     * Author: Sweeper <wili.lixiang@gmail.com>
-     * DateTime: 2024/2/23 14:10
-     */
-    public void queryExtendWord() {
-        System.out.println("============== queryExtendWord ==============");
-
-        Connection connection = this.connection(true); // 调用连接数据库的方法
-
-        int extendCount = this.count("select count(*) from pro_es_extend_word");
-
-        System.out.println("extendCount " + extendCount);
-
-        int stopCount = this.count("select count(*) from pro_es_stop_word");
-
-        System.out.println("stopCount " + stopCount);
-
-        if (connection != null) {
-            try {
-                Statement statement = connection.createStatement();// 执行SQL对象Statement，执行SQL的对象
-                String    sql       = "select word from pro_es_extend_word"; // 执行SQL
-                ResultSet resultSet = statement.executeQuery(sql);
-                while (resultSet.next()) {
-                    System.out.println("word=" + resultSet.getString("word"));
-                }
-
-                System.out.println("=========== select word from pro_es_extend_word order by id desc limit ?,?; ===========");
-
-                int page = 1;
-                int size = 2;
-                while (true) {
-                    PreparedStatement pstmt = connection.prepareStatement("select word from pro_es_extend_word order by id desc limit ?,?;");//获取PreparedStatement
-                    int               limit = (page - 1) * size;
-                    pstmt.setInt(1, limit);//对SQL语句第一个参数赋值
-                    pstmt.setInt(2, size);//对SQL语句第二个参数赋值
-                    ResultSet rs = pstmt.executeQuery();//执行查询操作
-
-                    System.out.println("===== pstmt sql: " + pstmt + " =====");
-
-                    if (!rs.isBeforeFirst()) {
-                        System.out.println("===== 暂无数据 =====");
-                        break;
-                    }
-                    page++;
-                    while (rs.next()) {
-                        System.out.println("word=" + rs.getString("word"));
-                    }
-                }
-
-                // 释放连接
-                resultSet.close();
-                statement.close();
-                connection.close();
-            } catch (SQLException e) {
-                logger.error("error", e);
-            }
         }
     }
 
